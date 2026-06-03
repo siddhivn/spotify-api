@@ -1,22 +1,23 @@
 ### Phase 1: Operating System & Environment Setup
-1. Boot up and Update Your Pi
+
+##### 1. Boot up and Update Your Pi
 Turn on your Pi. Ensure it is connected to your Wi-Fi network via the desktop interface. Open the Terminal app on your desktop and update the system packages:
 
-Bash
 sudo apt update && sudo apt upgrade -y
-2. Create Your Project Directory
+
+##### 2. Create Your Project Directory
 Create a dedicated space for your project files:
 
-Bash
 mkdir ~/spotify_desk_display
 cd ~/spotify_desk_display
-3. Setup a Python Virtual Environment
+
+##### 3. Setup a Python Virtual Environment
 Modern Raspberry Pi OS versions enforce isolated environments to keep your system stable.
 
-Bash
 python3 -m venv venv
 source venv/bin/activate
-Note: You will need to run source venv/bin/activate every time you open a new terminal to work on this project. Your terminal line will start with (venv) when active.
+
+##### Note: You will need to run source venv/bin/activate every time you open a new terminal to work on this project. Your terminal line will start with (venv) when active.
 
 ### Phase 2: Spotify API Setup & Core Connection
 1. Register Your App on Spotify
