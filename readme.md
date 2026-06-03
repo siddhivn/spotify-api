@@ -136,20 +136,21 @@ A browser window will pop up automatically on your Pi. Log in to Spotify, grant 
 ### Phase 3: The Flask Server & Visual Dashboard
 Now we want to build the local web application that will display the UI layout beautifully on your connected monitor.
 
-1. Install Flask
-Bash
+##### 1. Install Flask
+```
 pip install flask requests
-2. Layout Your Folders
+```
+##### 2. Layout Your Folders
 Flask expects a strict file structure to serve layout files:
-
-Bash
+```
 mkdir templates static
-3. Build the Frontend (templates/index.html)
-Bash
+```
+##### 3. Build the Frontend (templates/index.html)
+```
 nano templates/index.html
+```
 Paste this complete clean UI structure:
-
-HTML
+```
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -234,14 +235,14 @@ HTML
     </script>
 </body>
 </html>
-4. Create the Core Application Engine (app.py)
+```
+##### 4. Create the Core Application Engine (app.py)
 This merges the Spotify fetch engine and the dashboard app.
-
-Bash
+```
 nano app.py
+```
 Paste this complete app architecture:
-
-Python
+```
 from flask import Flask, render_template, jsonify
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
@@ -302,9 +303,11 @@ def api_state():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
+```
+
 Run python app.py, launch Chromium on your Pi, and navigate to http://localhost:5000. You will see a functional, beautiful dashboard reacting to your music changes in real-time.
 
-Phase 4: Camera Integration (Presence / Smart Sleeping Mode)
+### Phase 4: Camera Integration (Presence / Smart Sleeping Mode)
 Now we will hook up your hardware camera module to act as a physical presence detector. If you are absent for a prolonged period, your Pi can stop requesting data or hide the display.
 
 1. Install OpenCV dependencies
