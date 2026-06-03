@@ -2,55 +2,55 @@
 
 ##### 1. Boot up and Update Your Pi
 Turn on your Pi. Ensure it is connected to your Wi-Fi network via the desktop interface. Open the Terminal app on your desktop and update the system packages:
-
+```
 sudo apt update && sudo apt upgrade -y
-
+```
 ##### 2. Create Your Project Directory
 Create a dedicated space for your project files:
-
+```
 mkdir ~/spotify_desk_display
 cd ~/spotify_desk_display
-
+```
 ##### 3. Setup a Python Virtual Environment
 Modern Raspberry Pi OS versions enforce isolated environments to keep your system stable.
-
+```
 python3 -m venv venv
 source venv/bin/activate
-
+```
 ##### Note: You will need to run source venv/bin/activate every time you open a new terminal to work on this project. Your terminal line will start with (venv) when active.
 
 ### Phase 2: Spotify API Setup & Core Connection
-1. Register Your App on Spotify
+
+##### 1. Register Your App on Spotify
 Go to the Spotify Developer Dashboard on your Pi's web browser or your computer, and log in.
 
-Click Create App.
+- Click Create App.
+- Name it Desk Companion Display.
+- Set the Redirect URI to: http://127.0.0.1:8080/callback
+- Save it, go to the app settings, and copy your Client ID and Client Secret.
 
-Name it Desk Companion Display.
-
-Crucial Step: Set the Redirect URI to: http://localhost:8080/callback
-
-Save it, go to the app settings, and copy your Client ID and Client Secret.
-
-2. Install the Spotify Python Library
+##### 2. Install the Spotify Python Library
 Inside your activated terminal ((venv)), run:
-
-Bash
+```
 pip install spotipy
-3. Write Your First Test Script
-Create a test file to fetch your live playback:
+```
 
-Bash
+##### 3. Write Your First Test Script
+Create a test file to fetch your live playback:
+```
 nano auth_test.py
+```
+
 Paste the following code (replace with your actual Spotify credentials):
 
-Python
+```
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import time
 
 CLIENT_ID = "YOUR_SPOTIFY_CLIENT_ID"
 CLIENT_SECRET = "YOUR_SPOTIFY_CLIENT_SECRET"
-REDIRECT_URI = "http://localhost:8080/callback"
+REDIRECT_URI = "http://127.0.0.1:8080/callback"
 
 scope = "user-read-currently-playing user-read-playback-state"
 
@@ -80,13 +80,57 @@ while True:
     except Exception as e:
         print(f"Error: {e}")
     time.sleep(3)
+```
 Press Ctrl+O, then Enter to save, and Ctrl+X to exit.
 
-4. Run it and Authenticate
-Run the script:
+#### note: cant use this code as spotify has restricted the audio features option and made it private so modified code is given below which only shows the artists name and the song playing.
 
-Bash
+```
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
+import time
+
+CLIENT_ID = "5c0626710e7c49a7a44fc495d21c46c8"
+CLIENT_SECRET = "d4100fced29142249de2b7bd80a8d1a7"
+REDIRECT_URI = "http://127.0.0.1:8080/callback"
+
+scope = "user-read-currently-playing user-read-playback-state"
+
+sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
+    client_id=CLIENT_ID,
+    client_secret=CLIENT_SECRET,
+    redirect_uri=REDIRECT_URI,
+    scope=scope
+))
+
+print("Testing connection...")
+while True:
+    try:
+        current_track = sp.current_user_playing_track()
+        if current_track is not None and current_track['is_playing']:
+            track_name = current_track['item']['name']
+            artist_name = current_track['item']['artists'][0]['name']
+            track_id = current_track['item']['id']
+            
+            # Fetch audio features for energy score
+            features = sp.audio_features(track_id)[0]
+            energy = features['energy'] if features else 0.5
+            
+            print(f"Now Playing: {track_name} by {artist_name} [Energy: {energy}]")
+        else:
+            print("No music playing right now.")
+    except Exception as e:
+        print(f"Error: {e}")
+    time.sleep(3)
+```
+
+(insert picture of output so far here)
+
+##### 4. Run it and Authenticate
+Run the script:
+```
 python auth_test.py
+```
 A browser window will pop up automatically on your Pi. Log in to Spotify, grant access, and once it redirects to a blank page or an error page showing localhost:8080, your terminal will come alive printing whatever song you play on your phone or computer.
 
 ### Phase 3: The Flask Server & Visual Dashboard
