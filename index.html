@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Mood Display</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: white;
+            transition: background 1.5s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            max-width: 400px;
+            width: 100%;
+        }
+        #album-art {
+            width: 250px;
+            height: 250px;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            margin-bottom: 20px;
+        }
+        h2 { margin: 10px 0 5px 0; font-size: 24px; }
+        h3 { margin: 0 0 20px 0; font-size: 18px; color: #b3b3b3; }
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            background: rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="display-box">
+        <img id="album-art" src="https://via.placeholder.com/250" alt="Album Art">
+        <h2 id="track-name">Loading...</h2>
+        <h3 id="artist-name">---</h3>
+        <div class="status-badge" id="mood-badge">Mood: Calibrating</div>
+        <p style="font-size:12px; color:#aaa;" id="presence-badge">Screen Active</p>
+    </div>
+
+    <script>
+        async function updateDashboard() {
+            try {
+                const response = await fetch('/api/state');
+                const data = await response.json();
+                
+                if (data.is_playing) {
+                    document.getElementById('display-box').style.display = "block";
+                    document.getElementById('track-name').innerText = data.song;
+                    document.getElementById('artist-name').innerText = data.artist;
+                    document.getElementById('album-art').src = data.album_art;
+                    document.getElementById('mood-badge').innerText = "Mood: " + data.mood;
+                    document.body.style.backgroundColor = data.color;
+                } else {
+                    document.getElementById('track-name').innerText = "Idling";
+                    document.getElementById('artist-name').innerText = "Play a song on Spotify";
+                    document.body.style.backgroundColor = "#121212";
+                }
+            } catch (err) {
+                console.log("Error updating dashboard:", err);
+            }
+        }
+        setInterval(updateDashboard, 2000); // Check every 2 seconds
+    </script>
+</body>
+</html>
